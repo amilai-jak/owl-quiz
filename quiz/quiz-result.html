@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../css/quiz.css">
     <title>Results!</title>
 </head>
 <body>
-    <h1>Results!</h1>
-    <div id="results"></div>
-    <a href="quiz.html">Back to quiz</a>
-    <script src="../js/quiz-result.js"></script>
+<section class="quiz">
+    <div class="quiz-window">
+        <h1 id="quiz-title">Leaderboard</h1>
+        <div class="answers" id="quiz-answers">
+        </div>
+        <div id="navigation">
+            <a href="quiz.html" id="prev-btn">I wanna again!</a>
+        </div>
+    </div>
+</section>
+<script src="../js/quiz-result.js"></script>
 </body>
 </html>

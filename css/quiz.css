@@ -45,6 +45,13 @@ body {
     margin: auto;
     text-align: center;
 }
+.answers p {
+    padding: 5px 10px;
+    background-color: #FF6F61;
+    color: #fff;
+    border: black solid 1px;
+    border-radius: 5px;
+}
 .answers button {
     padding: 10px 20px;
     background-color: #FF6F61;

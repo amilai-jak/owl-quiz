@@ -2,7 +2,7 @@ const quizzData = [
     {
         id: 0,
         name: "Kui suur on öökulli keskmine eluiga looduses?",
-        questions: [
+        answers: [
             {id: 1, name: "2-3 aastat", answer: false},
             {id: 2, name: "5–12 aastat", answer: true},
             {id: 3, name: "15–20 aastat", answer: false},
@@ -12,7 +12,7 @@ const quizzData = [
     {
         id: 1,
         name: "Mis on öökullide lemmiktoit?",
-        questions: [
+        answers: [
             {id: 1, name: "Marjad ja puuviljad", answer: false},
             {id: 2, name: "Seemned", answer: false},
             {id: 3, name: "Maod", answer: false},
@@ -22,7 +22,7 @@ const quizzData = [
     {
         id: 2,
         name: "Kus öökullid peamiselt pesitsevad?",
-        questions: [
+        answers: [
             {id: 1, name: "Igalpool maailmas, peale Antartika", answer: true},
             {id: 2, name: "Antartika", answer: false},
             {id: 3, name: "Ookeanide rannikul", answer: false},
@@ -32,7 +32,7 @@ const quizzData = [
     {
         id: 3,
         name: "Kuidas öökullid suhtlevad omavahel?",
-        questions: [
+        answers: [
             {id: 1, name: "Tantsides keerulisi liigutusi", answer: false},
             {id: 2, name: "Häälitsuste ja hüüdega", answer: true},
             {id: 3, name: "Värvides sulgi erinevatelt toonidelt", answer: false},
@@ -42,7 +42,7 @@ const quizzData = [
     {
         id: 4,
         name: "Kui kaugelt kuuleb öökull oma saaki?",
-        questions: [
+        answers: [
             {id: 1, name: "1–2 meetrit", answer: false},
             {id: 2, name: "Kuni 50 meetrit", answer: false},
             {id: 3, name: "Kuni 300 meetri", answer: true},
@@ -52,7 +52,7 @@ const quizzData = [
     {
         id: 5,
         name: "Milline on öökulli suurim vaenlane looduses?",
-        questions: [
+        answers: [
             {id: 1, name: "Krokodillid", answer: false},
             {id: 2, name: "Suured kotkad", answer: false},
             {id: 3, name: "Inimesed (habitatide hävimine)", answer: false},
@@ -62,7 +62,7 @@ const quizzData = [
     {
         id: 6,
         name: "Mis värv on Soorätsi silmad?",
-        questions: [
+        answers: [
             {id: 1, name: "Punased", answer: false},
             {id: 2, name: "Rohelised", answer: false},
             {id: 3, name: "Sinised", answer: false},
@@ -72,7 +72,7 @@ const quizzData = [
     {
         id: 7,
         name: "Kui palju öökulli liike on maailmas?",
-        questions: [
+        answers: [
             {id: 1, name: "2–3 liiki", answer: false},
             {id: 2, name: "Umbes 20 liiki", answer: false},
             {id: 3, name: "Üle 100 liigi", answer: true},
@@ -82,7 +82,7 @@ const quizzData = [
     {
         id: 8,
         name: "Kui kiiresti võib öökull lennata?",
-        questions: [
+        answers: [
             {id: 1, name: "5–10 km/h", answer: false},
             {id: 2, name: "30–60 km/h", answer: true},
             {id: 3, name: "80–100 km/h", answer: false},
@@ -92,7 +92,7 @@ const quizzData = [
     {
         id: 9,
         name: "Mida öökullid teevad talveks?",
-        questions: [
+        answers: [
             {id: 1, name: "Sigivad", answer: true},
             {id: 2, name: "Lendavad soojematele aladele", answer: false},
             {id: 3, name: "Muutuvad valgeks (nagu jänesed)", answer: false},
@@ -104,18 +104,26 @@ const quizzData = [
 let currentQuizId = 0;
 let correct = false;
 
-function renderQuiz() {
-    const quiz = quizzData[currentQuizId];
-    document.getElementById("quiz-title").textContent = quiz.name;
+localStorage.setItem("day", new Date().getDate().toString() + "." + new Date().getMonth().toString());
+localStorage.setItem("time", new Date().getHours().toString() + ":" + new Date().getMinutes().toString())
 
+
+function renderQuiz() {
+    const question = quizzData[currentQuizId];
+    document.getElementById("quiz-title").textContent = question.name;
+    if (currentQuizId === quizzData.length - 1) {
+        saveAnswerData().then(() => {
+            window.location = "../quiz/quiz-result.html"
+        })
+    }
     const answersContainer = document.getElementById("quiz-answers");
     answersContainer.innerHTML = "";
 
-    quiz.questions.forEach(question => {
+    question.answers.forEach(answerObject => {
         const button = document.createElement("button");
-        button.textContent = question.name;
+        button.textContent = answerObject.name;
         button.addEventListener("click", function() {
-            if (question.answer) {
+            if (answerObject.answer) {
                 correct = true;
                 document.getElementById("navigation").style.display = "block";
             }
@@ -144,11 +152,20 @@ document.getElementById("next-btn").addEventListener("click", function(e) {
         document.getElementById("navigation").style.display = "none";
         renderQuiz();
     }
-    else if (currentQuizId === quizzData.length - 1) {
-        document.getElementById("next-btn").href = "../quiz/quiz-result.html";
-    }
-
-
 });
+
+async function saveAnswerData() {
+    await fetch("https://kool.krister.ee/chat/owlquiz", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            username: localStorage.getItem("person"),
+            start: `day: ${localStorage.getItem("day")} time: ${localStorage.getItem("time")}`,
+            end: `day: ${new Date().getDate().toString() + "." + new Date().getMonth().toString()} time: ${new Date().getHours().toString() + ":" + new Date().getMinutes().toString()}`
+        })
+    })
+}
 
 renderQuiz();
